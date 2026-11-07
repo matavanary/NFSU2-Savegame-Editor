@@ -1,0 +1,5 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /ENOMBAN/NFSU2-Savegame-Editor/
+  RewriteRule ^$ dist/ [R=302,L]
+</IfModule>

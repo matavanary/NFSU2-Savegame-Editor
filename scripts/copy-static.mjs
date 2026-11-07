@@ -8,7 +8,7 @@ const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
 const buildNumber = new Date().toISOString().replace(/\D/g, '').slice(0, 14);
 
 /** Files served as-is next to the compiled modules. */
-const STATIC_FILES = ['index.html', 'app.css', 'editor.css', 'car-donors.json'];
+const STATIC_FILES = ['index.html', 'app.css', 'editor.css', 'car-donors.json', 'angular.min.js', 'manifest.json', 'sw.js', 'save-coverage.svg'];
 
 mkdirSync(out, { recursive: true });
 for (const file of STATIC_FILES) {

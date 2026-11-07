@@ -6,6 +6,8 @@
   <title>NFSU2 Career Save Editor | Matavanary Studio</title>
   <link rel="stylesheet" href="./editor.css">
   <link rel="stylesheet" href="./app.css">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#00e5ff">
 </head>
 <body ng-controller="EditorController">
   <header class="editor-header">
@@ -18,17 +20,22 @@
       <div class="editor-build">
         <span class="build-badge" title="Build number: UTC date and time (YYYYMMDDhhmmss)">Matavanary Edition &middot; v__APP_VERSION__ &middot; Build __BUILD_NUMBER__</span>
         <p class="build-splash">Tuned by Matavanary Studio!</p>
+        <div class="lang-switcher">
+          <button type="button" class="lang-btn" ng-class="{ 'active': lang === 'th' }" ng-click="setLang('th')">🇹🇭 ไทย</button>
+          <button type="button" class="lang-btn" ng-class="{ 'active': lang === 'en' }" ng-click="setLang('en')">🇬🇧 English</button>
+        </div>
       </div>
     </div>
   </header>
 
   <main class="editor-main">
-    <section class="profile-section">
-      <h3>Save file</h3>
-      <p class="muted">Start with a backup. Load a career save or an nfsu2-web backup ZIP. Your file stays in this browser.</p>
+    <section class="profile-section drop-zone" ng-class="{ 'drop-active': isDragging }" nfsu-file-drop="loadFile">
+      <h3>{{ t('saveFileTitle') }}</h3>
+      <p class="muted">{{ t('saveFileDesc') }}</p>
       <div class="editor-row">
         <input type="file" id="file" aria-label="Choose career save or nfsu2-web backup ZIP" accept="*/*" nfsu-file-change="loadFile">
         <span class="muted" ng-if="fileName">{{ fileName }} ({{ fileSize }} bytes)</span>
+        <span class="drop-badge">{{ t('dragDropHint') }}</span>
       </div>
       <div class="editor-row" ng-if="backup">
         <label>
@@ -39,22 +46,50 @@
         <span class="muted">{{ backup.note }}</span>
       </div>
       <p class="message" ng-class="status.type" ng-if="status.text" role="status">{{ status.text }}</p>
+
+      <div class="snapshots-box" ng-if="snapshots.length > 0">
+        <div class="snapshots-header">
+          <strong>⏱️ {{ t('recentSnapshots') }}</strong>
+          <button type="button" class="clear-snaps-btn" ng-click="clearSnapshots()">{{ t('clearHistoryBtn') }}</button>
+        </div>
+        <div class="snapshots-list">
+          <div class="snapshot-item" ng-repeat="snap in snapshots track by snap.id">
+            <div class="snapshot-details">
+              <span class="snapshot-name">{{ snap.name }} ({{ snap.driver || 'Driver' }})</span>
+              <span class="snapshot-meta">{{ snap.time }} &middot; ${{ snap.money | number }}</span>
+            </div>
+            <button type="button" class="profile-action-btn snap-restore-btn" ng-click="restoreSnapshot(snap.id)">{{ t('restoreBtn') }}</button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="profile-section" ng-if="loaded">
-      <h3>Profile</h3>
+      <h3>{{ t('profileTitle') }}</h3>
       <form class="bike-dialog-form profile-form" ng-submit="applyProfile()">
         <label>
-          Driver name
+          {{ t('driverName') }}
           <input type="text" id="nameInput" ng-model="form.name" maxlength="31">
         </label>
         <label>
-          Money
+          {{ t('money') }}
           <input type="number" id="moneyInput" ng-model="form.money" min="0" max="2147483647" step="1">
+        </label>
+        <div class="money-quick-bar">
+          <span class="muted">{{ t('quickMoney') }}</span>
+          <div class="money-quick-buttons">
+            <button type="button" class="quick-btn" ng-click="adjustMoney(50000)">+50K</button>
+            <button type="button" class="quick-btn" ng-click="adjustMoney(100000)">+100K</button>
+            <button type="button" class="quick-btn" ng-click="adjustMoney(500000)">+500K</button>
+            <button type="button" class="quick-btn quick-btn-max" ng-click="setMoneyMax()">{{ t('maxMoney') }}</button>
+            <button type="button" class="quick-btn" ng-click="setMoneyZero()">$0</button>
+          </div>
+        </div>
+
         </label>
         <div class="bike-dialog-actions">
           <span class="muted">Checksums: {{ checksumText() }}</span>
-          <button type="submit" class="profile-action-btn">Apply profile</button>
+          <button type="submit" class="profile-action-btn">{{ t('applyProfile') }}</button>
         </div>
       </form>
     </section>
@@ -452,7 +487,14 @@
     </div>
   </footer>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="./angular.min.js"></script>
   <script type="module" src="./main.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch((err) => console.log('SW error:', err));
+      });
+    }
+  </script>
 </body>
 </html>

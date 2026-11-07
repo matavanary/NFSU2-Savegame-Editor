@@ -22,8 +22,9 @@ import {
   type CurveKind, type CurvePoint, type DynoEvent, type DynoResult, type GameData, type Gearing, type ScalarRow, type TuningBand,
 } from '../model/dyno.js';
 import type {
-  CategoryView, CurveChart, DynoCell, DynoRow, DynoTab, EditorScope, GearChart, PartView, SlotView, Status, TuningTab, UniquePartView, VisualRow,
+  CategoryView, CurveChart, DynoCell, DynoRow, DynoTab, EditorScope, GearChart, PartView, SaveSnapshot, SlotView, Status, TuningTab, UniquePartView, VisualRow,
 } from './editor-scope.js';
+import { TRANSLATIONS, type Lang } from '../data/translations.js';
 
 const partsByIndex = new Map<number, PerfPart>(PERF_PARTS.map((p) => [p.index, p]));
 const tuningPerfIndexSet = new Set(TUNING_PERF_INDICES);
@@ -49,6 +50,34 @@ const TUNING_TABS: TuningTab[] = [
  * and translates UI actions into model calls.
  * @param $scope Injected scope, typed by {@link EditorScope}.
  */
+function uint8ToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
+function base64ToUint8(base64: string): Uint8Array {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+function getStoredSnapshots(): SaveSnapshot[] {
+  try {
+    if (typeof localStorage === 'undefined') return [];
+    const raw = localStorage.getItem('nfsu2_snapshots');
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function EditorController($scope: EditorScope): void {
   let data: Uint8Array | null = null;
   let donors: Donor[] = [];
@@ -68,6 +97,78 @@ export function EditorController($scope: EditorScope): void {
   $scope.checks = null;
   $scope.backup = null;
   $scope.status = { type: '', text: '' };
+  $scope.lang = (typeof localStorage !== 'undefined' && (localStorage.getItem('nfsu2_lang') as Lang)) || 'th';
+  $scope.setLang = function (l: Lang): void {
+    $scope.lang = l;
+    try {
+      if (typeof localStorage !== 'undefined') localStorage.setItem('nfsu2_lang', l);
+    } catch {}
+  };
+  $scope.t = function (key: string): string {
+    const entry = TRANSLATIONS[key];
+    if (!entry) return key;
+    return entry[$scope.lang] || entry['en'] || key;
+  };
+  $scope.isDragging = false;
+  $scope.snapshots = getStoredSnapshots();
+
+  function recordSnapshot(bytes: Uint8Array, fileName: string): void {
+    try {
+      if (typeof localStorage === 'undefined') return;
+      const list = getStoredSnapshots();
+      const id = Date.now().toString();
+      const now = new Date();
+      const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+      const dName = getName(careerBytes(bytes));
+      const dMoney = getMoney(careerBytes(bytes));
+      const snap: SaveSnapshot = {
+        id,
+        name: fileName || dName || 'career',
+        driver: dName,
+        money: dMoney,
+        time,
+        bytes: uint8ToBase64(bytes),
+      };
+      const updated = [snap, ...list.slice(0, 4)];
+      localStorage.setItem('nfsu2_snapshots', JSON.stringify(updated));
+      $scope.snapshots = updated;
+    } catch (e) {
+      console.warn('Could not save snapshot', e);
+    }
+  }
+
+  $scope.restoreSnapshot = function (id: string): void {
+    const found = $scope.snapshots.find((s) => s.id === id);
+    if (!found) return;
+    try {
+      const bytes = base64ToUint8(found.bytes);
+      backup = null;
+      $scope.backup = null;
+      $scope.fileName = found.name;
+      $scope.fileSize = bytes.length;
+      showLoaded(bytes, `Restored "${found.name}".`);
+    } catch (err: unknown) {
+      setStatus('error', `Failed to restore snapshot: ${errorMessage(err)}`);
+    }
+  };
+
+  $scope.clearSnapshots = function (): void {
+    try {
+      if (typeof localStorage !== 'undefined') localStorage.removeItem('nfsu2_snapshots');
+    } catch {}
+    $scope.snapshots = [];
+  };
+
+  $scope.adjustMoney = function (amt: number): void {
+    const cur = Number($scope.form.money) || 0;
+    $scope.form.money = Math.max(0, Math.min(2147483647, cur + amt));
+  };
+  $scope.setMoneyMax = function (): void {
+    $scope.form.money = 2147483647;
+  };
+  $scope.setMoneyZero = function (): void {
+    $scope.form.money = 0;
+  };
   $scope.form = { name: '', money: 0 };
   $scope.slots = [];
   $scope.perfTotal = TUNING_PERF_INDICES.length;
@@ -436,6 +537,9 @@ export function EditorController($scope: EditorScope): void {
     const checks = verifyChecksums(careerBytes(bytes));
     $scope.checks = checks;
     $scope.loaded = true;
+    if (!backup) {
+      recordSnapshot(bytes, $scope.fileName);
+    }
     syncForm(bytes);
     refresh();
     const valid = Object.values(checks).every(Boolean);

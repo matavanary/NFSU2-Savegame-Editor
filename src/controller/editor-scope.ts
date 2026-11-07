@@ -200,8 +200,27 @@ export interface VisualView {
   groups: { label: string; rows: VisualRow[] }[];
 }
 
+export interface SaveSnapshot {
+  id: string;
+  name: string;
+  driver: string;
+  money: number;
+  time: string;
+  bytes: string;
+}
+
 /** State and actions the editor template binds to. */
 export interface EditorScope extends angular.IScope {
+  lang: 'en' | 'th';
+  setLang(lang: 'en' | 'th'): void;
+  t(key: string): string;
+  isDragging: boolean;
+  snapshots: SaveSnapshot[];
+  adjustMoney(amount: number): void;
+  setMoneyMax(): void;
+  setMoneyZero(): void;
+  restoreSnapshot(id: string): void;
+  clearSnapshots(): void;
   loaded: boolean;
   fileName: string;
   fileSize: number;

@@ -430,8 +430,7 @@ body {
   .visual-row { grid-template-columns: minmax(0, 1fr) 1.5rem; }
   .visual-row select, .visual-color-toggle { grid-column: 1 / -1; }
   .visual-color-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
-  .visual-color { min-height: 44px; font-size: 13px; }
-}
+  .visual-color { min-height: 44px; font-size: 13px; 
 
 /* Matavanary Studio Footer */
 .editor-footer {
@@ -456,4 +455,148 @@ body {
 .editor-footer a:hover {
   text-decoration: underline;
 }
+
+/* Language Switcher */
+.lang-switcher {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.lang-btn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.lang-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-text-strong);
+}
+.lang-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #000;
+  box-shadow: 0 0 10px var(--hud-dim);
+}
+
+/* Drag & Drop Zone */
+.drop-zone {
+  transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
+  position: relative;
+}
+.drop-zone.drop-active {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 16px var(--hud-glow);
+  background-color: var(--color-elevated) !important;
+}
+.drop-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background: var(--accent-soft);
+  color: var(--color-primary);
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+/* Quick Money Buttons */
+.money-quick-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 14px;
+}
+.money-quick-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.quick-btn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.quick-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-elevated);
+}
+.quick-btn-max {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: var(--accent-soft);
+}
+
+/* Snapshots & Local History */
+.snapshots-box {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--color-border);
+}
+.snapshots-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.clear-snaps-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-warning);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.clear-snaps-btn:hover {
+  text-decoration: underline;
+}
+.snapshots-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+.snapshot-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+.snapshot-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.snapshot-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.snapshot-meta {
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+.snap-restore-btn {
+  font-size: 11px;
+  padding: 4px 8px;
+  flex-shrink: 0;
+
 }

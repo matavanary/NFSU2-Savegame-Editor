@@ -1,0 +1,20 @@
+{
+  "name": "NFSU2 Savegame Editor — Matavanary Edition",
+  "short_name": "NFSU2 Editor",
+  "description": "Browser-based career save editor and dyno tuner for Need for Speed: Underground 2",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0d14",
+  "theme_color": "#00e5ff",
+  "categories": ["games", "utilities"],
+  "icons": [
+    {
+      "src": "./save-coverage.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

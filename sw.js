@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nfsu2-editor-v1';
+const CACHE_NAME = 'nfsu2-editor-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -34,6 +34,11 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Only handle http/https GET requests
+  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -45,7 +50,7 @@ self.addEventListener('fetch', (event) => {
         }
         const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
+          cache.put(event.request, responseToCache).catch(() => {});
         });
         return networkResponse;
       }).catch(() => {

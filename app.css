@@ -205,7 +205,13 @@
 
 /* The body gradients in editor.css are blue; the site's is a soft grey glow over the page color. */
 body {
-  background: radial-gradient(1200px 480px at 50% -160px, #2a2a2a, transparent 70%) no-repeat, #0d0d0d;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(1200px 480px at 50% -160px, #162030, transparent 70%) no-repeat, #0a0d14;
+}
+.editor-main {
+  flex: 1 0 auto;
 }
 
 /* editor.css gives these rows a light background, which clashes with the dark theme's light text. */
@@ -430,27 +436,43 @@ body {
   .visual-row { grid-template-columns: minmax(0, 1fr) 1.5rem; }
   .visual-row select, .visual-color-toggle { grid-column: 1 / -1; }
   .visual-color-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
-  .visual-color { min-height: 44px; font-size: 13px; 
+  .visual-color { min-height: 44px; font-size: 13px; }
+}
 
-/* Matavanary Studio Footer */
+/* Matavanary Studio Sticky Centered Footer */
 .editor-footer {
-  padding: 40px 24px 32px;
+  width: 100%;
+  margin-top: auto;
+  padding: 24px 20px;
   border-top: 1px solid var(--color-border);
-  margin-top: 40px;
-  text-align: center;
+  background: rgba(10, 13, 20, 0.95);
   color: var(--color-text-muted);
   font-size: 13px;
+  text-align: center;
 }
 .editor-footer-inner {
   max-width: 1120px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   gap: 6px;
+}
+.editor-footer p {
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
+}
+.editor-footer .footer-credits {
+  font-size: 12px;
+  opacity: 0.85;
 }
 .editor-footer a {
   color: var(--color-primary);
   text-decoration: none;
+  font-weight: 500;
 }
 .editor-footer a:hover {
   text-decoration: underline;

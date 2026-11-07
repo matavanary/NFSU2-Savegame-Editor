@@ -14,12 +14,12 @@
     <div class="editor-header-inner">
       <div class="editor-brand">
         <p class="landing-eyebrow">MATAVANARY STUDIO &middot; NEED FOR SPEED UNDERGROUND 2</p>
-        <h1>Career Save Editor</h1>
-        <p class="editor-description">Your garage. Your rules. Edit career saves, tuning &amp; visuals locally in your browser.</p>
+        <h1>{{ t('appTitle') }}</h1>
+        <p class="editor-description">{{ t('appDesc') }}</p>
       </div>
       <div class="editor-build">
         <span class="build-badge" title="Build number: UTC date and time (YYYYMMDDhhmmss)">Matavanary Edition &middot; v__APP_VERSION__ &middot; Build __BUILD_NUMBER__</span>
-        <p class="build-splash">Tuned by Matavanary Studio!</p>
+        <p class="build-splash" title="Tuned by Matavanary Studio!">{{ t('nowTuned') }}</p>
         <div class="lang-switcher">
           <button type="button" class="lang-btn" ng-class="{ 'active': lang === 'th' }" ng-click="setLang('th')">🇹🇭 ไทย</button>
           <button type="button" class="lang-btn" ng-class="{ 'active': lang === 'en' }" ng-click="setLang('en')">🇬🇧 English</button>

@@ -97,9 +97,19 @@ export function EditorController($scope: EditorScope): void {
   $scope.checks = null;
   $scope.backup = null;
   $scope.status = { type: '', text: '' };
+  function updateTitle(l: Lang): void {
+    if (typeof document !== 'undefined') {
+      document.title = l === 'th'
+        ? 'โปรแกรมแก้ไขเซฟ NFSU2 Career | Matavanary Studio'
+        : 'NFSU2 Career Save Editor | Matavanary Studio';
+    }
+  }
+
   $scope.lang = (typeof localStorage !== 'undefined' && (localStorage.getItem('nfsu2_lang') as Lang)) || 'th';
+  updateTitle($scope.lang);
   $scope.setLang = function (l: Lang): void {
     $scope.lang = l;
+    updateTitle(l);
     try {
       if (typeof localStorage !== 'undefined') localStorage.setItem('nfsu2_lang', l);
     } catch {}

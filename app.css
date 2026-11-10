@@ -323,6 +323,7 @@ body {
   padding: 24px;
   display: grid;
   gap: 20px;
+  flex: 1 0 auto;
 }
 .editor-main .profile-section {
   min-width: 0;
